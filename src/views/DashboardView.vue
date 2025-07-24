@@ -86,10 +86,6 @@
 </template>
 
 <script setup>
-// const teamMembers = [
-//   'https://i.pravatar.cc/32?img=3',
-// ]
-
 const stats = [
   {
     id: 1,

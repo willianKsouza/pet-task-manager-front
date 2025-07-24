@@ -7,29 +7,29 @@
           <ul class="flex items-center gap-x-4 p-4">
             <li class="flex items-center gap-x-2 px-2 rounded-md hover:bg-[#e0f7fa]">
               <IconTable class="text-[#0084a1] size-5" />
-              <a href="#" class="text-[#303030] font-semibold block py-2">Table</a>
+              <RouterLink :to="{ name: 'tasks' }" class="text-[#303030] font-semibold block py-2">Cards</RouterLink>
             </li>
             <li class="flex items-center gap-x-2 px-2 rounded-md hover:bg-[#e0f7fa]">
               <IconTable class="text-[#0084a1] size-5" />
-              <a href="#" class="text-[#303030] font-semibold block py-2">List</a>
+              <RouterLink :to="{ name: 'search' }" class="text-[#303030] font-semibold block py-2">Search</RouterLink>
             </li>
           </ul>
         </nav>
-        <button
-          class="bg-[#0084a1] flex items-center gap-x-2 px-4 py-2 rounded-md text-white font-semibold hover:bg-[#006f87] transition-colors"
-        >
-          <IconPlus class="size-5" />
-          <span class="">Add Task</span>
-        </button>
+     
+     
       </header>
     </div>
     <main class="bg-[#f2f2f2] h-screen overflow-y-auto">
       <slot />
     </main>
+  
   </div>
 </template>
 <script setup>
+
 import IconTable from '@/components/icons/IconTable.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
+import AddNewTask from '../modals/AddNewTask.vue';
+
 
 </script>

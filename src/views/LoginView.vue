@@ -9,7 +9,7 @@
         <p class="text-sm text-gray-500 mt-1">Acesse sua conta</p>
       </div>
 
-      <form @submit.prevent="handleLogin" class="space-y-4">
+      <form @submit.prevent="submit" class="space-y-4">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
           <input
@@ -42,51 +42,55 @@
           <button class="text-blue-600 hover:underline">Esqueceu a senha?</button>
         </div>
 
-        <button
-          type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors"
-        >
-          Entrar
-        </button>
-      </form>
+   
 
-      <p class="mt-6 text-xs text-center text-gray-400">
-        © 2025 Pet Task Manager. Todos os direitos reservados.
-      </p>
+        <button
+    type="submit"
+    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+    :disabled="isLoading"
+  >
+    <svg
+      v-if="isLoading"
+      class="animate-spin h-5 w-5 text-white"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+      ></path>
+    </svg>
+    <span>{{ isLoading ? 'Entrando...' : 'Entrar' }}</span>
+  </button>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useAuthStore } from '@/stores/useAuthStore'
 import { ref } from 'vue'
-import axios from '@/lib/axios'
-import router from '@/router'
+import { useRouter } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
+const isLoading = ref(false)
+const auth = useAuthStore()
+const router = useRouter()
 
-const handleLogin = async () => {
-    try {
-        // Primeiro, obtenha o cookie CSRF do Sanctum
-        await axios.get('/sanctum/csrf-cookie')
-
-        // Agora faça o login
-        const response = await axios.post('/api/login',
-            {
-                email: email.value,
-                password: password.value
-            }
-        )
-        // Sucesso no login
-            if (response.status === 204) {
-                router.push('/dashboard') // Redireciona para o dashboard após o login
-            } else {
-                console.error('Erro no login:', response.status, response.data)
-            }
-        console.log('Login realizado:', response)
-        // Aqui você pode redirecionar ou salvar o token, conforme necessário
-    } catch (error) {
-        console.error('Erro ao fazer login:', error)
-    }
+async function submit() {
+  try {
+    isLoading.value = true
+    await auth.login({ email: email.value, password: password.value })
+    router.push({ name: 'dashboard' })
+  } catch (error) {
+    
+    alert('Login failed')
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>

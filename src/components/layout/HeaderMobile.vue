@@ -12,32 +12,61 @@
         <IconMenuMobile @click="toggleMenu" class="text-[#0084a1] size-5" />
       </button>
     </header>
-    <transition name="slide-left">
+    <div v-show="isOpen" class="fixed inset-0 z-50">
   <div
-    v-if="isOpen"
-    class="fixed top-0 left-0 h-full w-full bg-white z-50 shadow-lg transform transition-transform duration-300 ease-in-out"
-  >
-    <nav class="flex flex-col">
-      <div class="flex items-center justify-end p-4 border-b border-[#0084a1]/20">
+    class="fixed inset-0 bg-black/30"
+    @click="toggleMenu"
+  ></div>
+
+  <transition name="slide-left">
+    <div
+      v-if="isOpen"
+      class="fixed top-0 left-0 h-full w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out"
+    >
+      <!-- conteúdo do menu -->
+      <div class="flex items-center justify-between p-4">
+        <h2 class="text-xl font-bold text-[#0084a1]">Menu</h2>
         <IconClose @click="toggleMenu" class="text-[#0084a1] size-8 cursor-pointer" />
       </div>
-      <ul class="space-y-2 px-4 *:hover:pl-4 *:transition-all">
-        <li class="flex items-center gap-x-2 pl-2 rounded-md hover:bg-[#e0f7fa]">
-          <IconDashBoard class="text-[#0084a1] size-5" />
-          <a href="#" class="text-[#303030] font-semibold block py-2">Dashboard</a>
-        </li>
-        <li class="flex items-center gap-x-2 pl-2 rounded-md hover:bg-[#e0f7fa]">
-          <IconListToDo class="text-[#0084a1] size-5" />
-          <a href="#" class="text-[#303030] font-semibold block py-2">Tasks</a>
-        </li>
-        <li class="flex items-center gap-x-2 pl-2 rounded-md hover:bg-[#e0f7fa]">
-          <IconNotification class="text-[#0084a1] size-5" />
-          <a href="#" class="text-[#303030] font-semibold block py-2">Notifications</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-</transition>
+      <div>
+        <ul class="space-y-2 px-4 *:hover:pl-4 *:transition-all">
+          <li class="rounded-md hover:bg-[#e0f7fa]">
+            <router-link
+              :to="{ name: 'dashboard' }"
+              class="flex items-center gap-x-2 text-[#303030] font-semibold py-2"
+            >
+              <IconDashBoard class="text-[#0084a1] size-5" />
+              Dashboard
+            </router-link>
+          </li>
+          <li class="rounded-md hover:bg-[#e0f7fa]">
+            <router-link
+              :to="{ name: 'tasks' }"
+              class="flex items-center gap-x-2 text-[#303030] font-semibold py-2"
+            >
+              <IconListToDo class="text-[#0084a1] size-5" />
+              Tasks
+            </router-link>
+          </li>
+          <li class="rounded-md hover:bg-[#e0f7fa]">
+            <router-link
+              to="/notifications"
+              class="flex items-center gap-x-2 text-[#303030] font-semibold py-2"
+            >
+              <IconNotification class="text-[#0084a1] size-5" />
+              Notifications
+            </router-link>
+          </li>
+        </ul>
+      </div>
+      <div class="p-4">
+        <button class="w-full bg-[#0084a1] text-white py-2 rounded-md">
+          Logout
+        </button>
+      </div>
+    </div>
+  </transition>
+</div>
 
   </div>
 </template>
@@ -48,13 +77,11 @@ import IconListToDo from '@/components/icons/IconListToDo.vue'
 import IconNotification from '@/components/icons/IconNotification.vue'
 import IconClose from '../icons/IconClose.vue'
 
-
-
-import { ref } from 'vue';
-const isOpen = ref(false);
+import { ref } from 'vue'
+const isOpen = ref(false)
 const toggleMenu = () => {
-  isOpen.value = !isOpen.value;
-};
+  isOpen.value = !isOpen.value
+}
 </script>
 <style scoped>
 .slide-left-enter-from {

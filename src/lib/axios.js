@@ -1,11 +1,12 @@
-import Axios from "axios";
+import axios from 'axios'
 
-Axios.defaults.withCredentials = true;
-Axios.defaults.withXSRFToken = true;
+axios.defaults.withCredentials = true;
 
-const axios = Axios.create({
-  baseURL: "http://localhost:8000",
-  withCredentials: true
-});
+axios.defaults.withXSRFToken = true;
 
-export default axios;
+
+axios.defaults.baseURL = 'http://localhost:8000'
+
+
+
+export default axios
