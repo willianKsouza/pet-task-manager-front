@@ -4,11 +4,6 @@ import axios from '@/lib/axios'
 import { computed } from 'vue'
 
 export const useTaskStore = defineStore('task', () => {
-  const currentPage = ref(1)
-  const lastPage = ref(1)
-  const perPage = ref(9)
-  const total = ref(0)
-
   const mapTasksByStatus = reactive({
     allTasks: [],
     to_do: [],
@@ -22,6 +17,13 @@ export const useTaskStore = defineStore('task', () => {
   const inProgressTasksComputed = computed(() => mapTasksByStatus.in_progress)
   const inReviewTasksComputed = computed(() => mapTasksByStatus.in_review)
   const doneTasksComputed = computed(() => mapTasksByStatus.done)
+
+  const currentPage = ref(1)
+  const lastPage = ref(1)
+  const total = ref(0)
+  const perPage = ref(9)
+  const from = ref(0)
+  const to = ref(0)
 
   const distributeTasksByStatus = (task) => {
     switch (task.status) {
@@ -40,41 +42,46 @@ export const useTaskStore = defineStore('task', () => {
     }
   }
 
-  // async function fetchTasks() {
-  //   try {
-  //     const { data } = await axios.get('/api/tasks')
-  //     mapTasksByStatus.allTasks = data
-  //     data.forEach((task) => distributeTasksByStatus(task))
-  //   } catch (error) {
-  //     console.error('Error fetching tasks:', error)
-  //   }
-  // }
+  async function fetchTasks(filters = {}, bool) {
+    if (!bool) {
+      try {
+        const { data } = await axios.get('/api/tasks')
+        mapTasksByStatus.allTasks = data
+        data.forEach((task) => distributeTasksByStatus(task))
+        return
+      } catch (error) {
+        console.error('Error fetching tasks:', error)
+        return
+      }
+    }
 
-  async function fetchTasks(filters = {}) {
-    try {
-      const { data } = await axios.get('/api/tasks', {
-        params: {
-          status: filters.status || 'all',
-          search: filters.search || '',
-          searchByName: filters.searchByName || false,
-          searchByDescription: filters.searchByDescription || false,
-          page: filters.page || 1,
-          perPage: filters.perPage || 9,
-        },
-      })
-      console.log('Fetched tasks:', data);
-      
-      data.data.forEach((task) => distributeTasksByStatus(task))
-      mapTasksByStatus.allTasks = data.data
+    if (bool) {
+      try {
+        const { data } = await axios.get('/api/tasks', {
+          params: {
+            status: filters.status || 'all',
+            search: filters.search || '',
+            searchByName: filters.searchByName || false,
+            searchByDescription: filters.searchByDescription || false,
+            page: filters.page || 1,
+            perPage: filters.perPage || 9,
+          },
+        })
+        mapTasksByStatus.allTasks = data.data
+        data.data.forEach((task) => distributeTasksByStatus(task))
+        console.log('Fetched tasks:', data)
+        currentPage.value = data.current_page
+        lastPage.value = data.last_page
+        total.value = data.total
+        perPage.value = data.per_page
+        from.value = data.from || 0
+        to.value = data.to || 0
 
-      currentPage.value = data.current_page
-      lastPage.value = data.last_page
-      perPage.value = data.per_page
-      total.value = data.total
-      console.log('Tasks fetched successfully:', data);
-      
-    } catch (error) {
-      console.error('Erro ao buscar tasks:', error)
+        return
+      } catch (error) {
+        console.error('Erro ao buscar tasks:', error)
+        return
+      }
     }
   }
 
@@ -115,17 +122,22 @@ export const useTaskStore = defineStore('task', () => {
   }
 
   async function deleteTask(task) {
-    try {
-      await axios.delete(`/api/task/delete/${task.id}`)
-      const index = mapTasksByStatus.allTasks.findIndex((t) => t.id === task.id)
-      if (index !== -1) {
-        mapTasksByStatus.allTasks.splice(index, 1)
-        mapTasksByStatus[task.status].splice(index, 1)
-      }
-    } catch (error) {
-      console.error('Error deleting task:', error)
+  try {
+    await axios.delete(`/api/task/delete/${task.id}`);
+
+    const indexInAllTasks = mapTasksByStatus.allTasks.findIndex((t) => t.id === task.id);
+    if (indexInAllTasks !== -1) {
+      mapTasksByStatus.allTasks.splice(indexInAllTasks, 1);
     }
+    const statusArray = mapTasksByStatus[task.status];
+    const indexInStatusArray = statusArray.findIndex((t) => t.id === task.id);
+    if (indexInStatusArray !== -1) {
+      statusArray.splice(indexInStatusArray, 1);
+    }
+  } catch (error) {
+    console.error('Erro ao deletar tarefa:', error);
   }
+}
 
   return {
     fetchTasks,
@@ -137,5 +149,11 @@ export const useTaskStore = defineStore('task', () => {
     inProgressTasksComputed,
     inReviewTasksComputed,
     doneTasksComputed,
+    currentPage,
+    lastPage,
+    total,
+    perPage,
+    from,
+    to,
   }
 })

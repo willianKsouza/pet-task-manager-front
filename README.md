@@ -1,35 +1,37 @@
-# pet-task-manager-front
+# 🎨 Vue 3 SPA – To-Do List (Frontend)
 
-This template should help get you started developing with Vue 3 in Vite.
+Este é o frontend da aplicação To-Do List, desenvolvido como uma SPA (Single Page Application) usando **Vue.js 3**, **Pinia**, **Vue Router** e **Tailwind CSS**. Ele consome uma API REST feita em Laravel.
 
-## Recommended IDE Setup
+A aplicação permite que usuários vejam, concluam, atualizem ou excluam tarefas, enquanto **apenas administradores podem criar novas tarefas**.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+---
 
-## Customize configuration
+## 📦 Requisitos
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+Antes de rodar o projeto, você precisa ter instalado:
 
-## Project Setup
+- Node.js (versão 18 ou superior)
+- npm (ou yarn)
+- Um navegador (Chrome, Firefox, etc.)
 
-```sh
+---
+
+## 🚀 Como rodar o projeto
+
+Siga os passos abaixo para instalar e executar o projeto localmente.
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/seu-usuario/vue-todo-client.git
+cd vue-todo-client
+
+
 npm install
-```
 
-### Compile and Hot-Reload for Development
+cp .env.example .env
 
-```sh
+VITE_API_URL=http://localhost:8000/api ou a porta em que aparecer no terminal apos dar php artisan serve
+
 npm run dev
-```
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```

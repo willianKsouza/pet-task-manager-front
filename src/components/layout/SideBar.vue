@@ -2,8 +2,10 @@
   <div class="border-r border-[#0084a1]/20">
     <div class="h-[70px] flex items-center border-b border-[#0084a1]/20">
       <div class="flex items-center gap-x-2 p-4">
-        <span>🐾</span>
-        
+        <div class="flex items-center justify-center bg-[#0084a1] p-1 rounded-md">
+          <IconPaw class="block text-white" />
+        </div>
+
         <h1 class="text-2xl font-bold text-[#0084a1]">Pet Task</h1>
       </div>
     </div>
@@ -15,7 +17,7 @@
         <li class="rounded-md hover:bg-[#e0f7fa]">
           <router-link
             to="/dashboard"
-            class="flex items-center gap-x-2  text-[#303030] font-semibold py-2"
+            class="flex items-center gap-x-2 text-[#303030] font-semibold py-2"
           >
             <IconDashBoard class="text-[#0084a1] size-5" />
             Dashboard
@@ -30,21 +32,15 @@
             Tasks
           </router-link>
         </li>
-        <li class="rounded-md hover:bg-[#e0f7fa]">
-          <router-link
-            to="/notifications"
-            class="flex items-center gap-x-2 text-[#303030] font-semibold py-2"
-          >
-            <IconNotification class="text-[#0084a1] size-5" />
-            Notifications
-          </router-link>
-        </li>
       </ul>
+      <div class="p-4">
+        <button class="w-full bg-[#0084a1] text-white py-2 rounded-md">Logout</button>
+      </div>
     </nav>
   </div>
 </template>
 <script setup>
 import IconDashBoard from '@/components/icons/IconDashBoard.vue'
 import IconListToDo from '@/components/icons/IconListToDo.vue'
-import IconNotification from '../icons/IconNotification.vue'
+import IconPaw from '../icons/IconPaw.vue'
 </script>

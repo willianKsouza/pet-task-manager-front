@@ -14,7 +14,6 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = data
       isAuthenticated.value = true
     } catch (error) {
-     
       user.value = null
       isAuthenticated.value = false
     }
@@ -23,7 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(credentials) {
     try {
       loading.value = true
-      await axios.get('/sanctum/csrf-cookie')
+      
       await axios.post('/api/login', credentials, {
         headers: { Accept: 'application/json' },
         withCredentials: true,
@@ -40,6 +39,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function checkAuthOnInit() {
+    
     try {
       await getUser()
     } catch {

@@ -3,7 +3,6 @@
     <div
       class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative max-h-[90vh] overflow-auto"
     >
-    {{ task }}
       <button
         class="absolute top-4 right-4 text-[#303030] hover:text-[#006f87]"
         @click="emit('close')"

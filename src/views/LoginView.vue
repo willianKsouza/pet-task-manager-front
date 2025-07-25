@@ -33,7 +33,9 @@
             required
           />
         </div>
-
+        <div>
+          <p>{{ warning || '' }}</p>
+        </div>
         <div class="flex items-center justify-between text-sm">
           <label class="flex items-center gap-2">
             <input type="checkbox" class="rounded border-gray-300 text-blue-600" />
@@ -80,6 +82,7 @@ const password = ref('')
 const isLoading = ref(false)
 const auth = useAuthStore()
 const router = useRouter()
+const warning = ref('')
 
 async function submit() {
   try {
@@ -87,7 +90,7 @@ async function submit() {
     await auth.login({ email: email.value, password: password.value })
     router.push({ name: 'dashboard' })
   } catch (error) {
-    
+    warning.value = 'Erro ao fazer login. Verifique suas credenciais.'
     alert('Login failed')
   } finally {
     isLoading.value = false

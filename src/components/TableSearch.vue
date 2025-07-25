@@ -1,36 +1,63 @@
 <template>
-  <section class="p-4">
+  <section class="flex items-center gap-2 py-2 bg-white mb-4">
+    <div class="px-2">
+      <h1 class="text-lg md:text-2xl font-bold text-[#303030] whitespace-nowrap">Search Tasks</h1>
+    </div>
+    <ul class="flex lg:hidden items-center gap-x-4">
+      <li class="flex items-center gap-x-2 px-2 rounded-md hover:bg-[#e0f7fa]">
+        <IconTable class="text-[#0084a1] size-5" />
+        <RouterLink :to="{ name: 'tasks' }" class="text-[#303030] font-semibold block py-2"
+          >Cards</RouterLink
+        >
+      </li>
+      <li class="flex items-center gap-x-2 px-2 rounded-md hover:bg-[#e0f7fa]">
+        <IconTable class="text-[#0084a1] size-5" />
+        <RouterLink :to="{ name: 'search' }" class="text-[#303030] font-semibold block py-2"
+          >Search</RouterLink
+        >
+      </li>
+    </ul>
+  </section>
+  <section class="px-2 pb-4">
     <div class="space-x-2 space-y-8">
       <button
         v-for="option in statusOptions"
         :key="option.value"
         @click="setStatusFilter(option.value)"
-        :class="[
-          'px-4 py-2 rounded-md font-semibold text-[#303030] bg-white shadow-lg hover:bg-[#e0f7fa] transition-colors',
-          statusFilter === option.value ? 'bg-[#e0f7fa]' : '',
-        ]"
+        class="px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-md"
+        :class="{
+          'bg-[#0084a1] text-white': option.value === 'all' && statusFilter === 'all',
+          [statusClasses[option.value]]: option.value !== 'all' && statusFilter === option.value,
+          'bg-white text-[#303030]':
+            option.value === 'all' ? statusFilter !== 'all' : statusFilter !== option.value,
+        }"
       >
         {{ option.label }}
       </button>
     </div>
-    <div class="flex items-center">
+    <div class="w-full flex flex-col md:flex-row gap-4 items-center">
       <div
-        class="flex justify-between items-center border border-[#0084a1]/30 rounded-md px-3 py-2 w-50 focus-within:ring-2 focus-within:ring-[#0084a1] transition"
+        class="flex justify-between items-center border border-[#0084a1]/30 rounded-md px-3 py-2 w-full md:w-1/2 focus-within:ring-2 focus-within:ring-[#0084a1] transition"
       >
         <input
+          @keypress.enter="applyFilters"
+          v-model="searchText"
           type="text"
           placeholder="Search tasks..."
           class="w-full bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
         />
-        <IconSearch class="text-[#0084a1] size-5" />
+        <IconSearch
+          @click="applyFilters"
+          class="block text-[#0084a1] hover:text-white hover:bg-[#0084a1]/50 w-10 h-8 px-1 cursor-pointer rounded-md"
+        />
       </div>
       <div class="flex items-center space-x-2 ml-4">
         <label class="inline-flex items-center space-x-1">
-          <input type="checkbox" id="searchByName" />
+          <input v-model="searchByName" type="checkbox" id="searchByName" />
           <span>Search by Name</span>
         </label>
         <label class="inline-flex items-center space-x-1">
-          <input type="checkbox" id="searchByDescription" />
+          <input v-model="searchByDescription" type="checkbox" id="searchByDescription" />
           <span>Search by Description</span>
         </label>
       </div>
@@ -52,22 +79,24 @@
         @close="editModalIsOpen = false"
       />
     </div>
-    <PaginatorBar />
+    <PaginatorBar :filters="filters" />
   </section>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useTaskStore } from '@/stores/useTaskStore'
 import { useAuthStore } from '@/stores/useAuthStore'
 import IconSearch from '@/components/icons/IconSearch.vue'
 import TaskCard from './TaskCard.vue'
 import EditTaskModal from './modals/EditTaskModal.vue'
 import PaginatorBar from './PaginatorBar.vue'
+import IconTable from './icons/IconTable.vue'
+import { useTaskStore } from '@/stores/useTaskStore'
 
 const user = ref(useAuthStore().user)
 
 const taskStore = useTaskStore()
+
 let oldTaskStatus = ''
 
 const selectedTask = ref(null)
@@ -81,29 +110,48 @@ const statusOptions = [
   { label: 'Done', value: 'done' },
 ]
 
+const statusClasses = {
+  to_do: 'bg-blue-500/20',
+  in_progress: 'bg-yellow-500/20',
+  in_review: 'bg-purple-500/20',
+  done: 'bg-green-500/20',
+}
+
 const statusFilter = ref('all')
 const searchText = ref('')
 const searchByName = ref(false)
 const searchByDescription = ref(false)
 
+const filters = ref({
+  status: 'all',
+  search: '',
+  searchByName: false,
+  searchByDescription: false,
+  page: 1,
+  perPage: 9,
+})
+
 const applyFilters = () => {
   if (searchText.value.trim() !== '' && !searchByName.value && !searchByDescription.value) {
-    alert('Please select at least one search field (Name or Description).')
+    alert('Selecione pelo menos um campo de pesquisa (Nome ou Descrição).')
     return
   }
 
-  taskStore.fetchTasks({
+  filters.value = {
+    ...filters.value,
     status: statusFilter.value,
-    search: searchText.value.trim() || null,
+    search: searchText.value.trim() || '',
     searchByName: searchByName.value,
     searchByDescription: searchByDescription.value,
-  })
+    page: 1,
+  }
+
+  taskStore.fetchTasks(filters.value, true)
 }
 const setStatusFilter = (status) => {
   statusFilter.value = status
   applyFilters()
 }
-
 
 const handleDeleteTask = (task) => {
   taskStore.deleteTask(task)
@@ -122,7 +170,7 @@ const handleUpdate = async (updatedTask) => {
 
 onMounted(() => {
   if (taskStore.allTasks.length === 0) {
-    taskStore.fetchTasks()
+    taskStore.fetchTasks(filters.value, true)
   }
 })
 </script>
