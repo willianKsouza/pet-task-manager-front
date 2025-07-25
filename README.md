@@ -23,7 +23,7 @@ Siga os passos abaixo para instalar e executar o projeto localmente.
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/vue-todo-client.git
+git clone git@github.com:willianKsouza/pet-task-manager-front.git
 cd vue-todo-client
 
 
