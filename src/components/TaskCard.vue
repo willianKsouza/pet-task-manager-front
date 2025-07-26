@@ -3,7 +3,6 @@
     class="flex flex-col justify-between shadow-md rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow"
     :class="statusClasses[task.status]"
   >
-  {{ task }}
     <div class="grow space-y-2">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-semibold text-[#303030]">{{ task.title }}</h3>
